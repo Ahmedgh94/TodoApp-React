@@ -1,8 +1,17 @@
 import "./App.css";
 import TodoList from "./components/TodoList";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+
+const theme = createTheme({
+  typography: {
+    fontFamily: [
+      "Inter"],
+  },
+})
 
 function App() {
   return (
+    <ThemeProvider theme={theme}>
     <div
       className="App"
       style={{
@@ -15,6 +24,7 @@ function App() {
     >
       <TodoList />
     </div>
+    </ThemeProvider>
   );
 }
 

@@ -56,3 +56,19 @@
   padding-bottom: 20px;
   padding-top: 20px;
 }
+
+/* ==== Custom fonts ==== */
+ @font-face {
+  font-family: Inter;
+  src: url("../public/Fonts/Inter_18pt-SemiBoldItalic.ttf");
+ }
+
+ @font-face {
+  font-family: Inter-light;
+  src: url("../public/Fonts/Inter_18pt-Light.ttf");
+ 
+ }
+ @font-face {
+  font-family: Inter-extraBold;
+  src: url("../public/Fonts/Inter_18pt-ExtraBold.ttf");
+ }
