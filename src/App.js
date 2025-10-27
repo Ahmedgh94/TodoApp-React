@@ -2,48 +2,48 @@ import { useState } from "react";
 import "./App.css";
 import TodoList from "./components/TodoList";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 } from "uuid"; // Component to generate unique IDs
 
 import { TodosContext } from "./Contexts/todosContext";
+import { Pallet } from "@mui/icons-material";
 
 const theme = createTheme({
   typography: {
     fontFamily: ["Inter"],
   },
+  
 });
 
-{
-  /* Array for To do */
-}
-const initialtodos = [
-  {
-    id: uuidv4(),
-    title: "Buy groceries",
-    details: "test test test",
-    isCompleted: false,
-  },
-  {
-    id: uuidv4(),
-    title: "Go to centrum",
-    details: "test test test",
-    isCompleted: false,
-  },
-  {
-    id: uuidv4(),
-    title: "Read a book",
-    details: "test test test",
-    isCompleted: false,
-  },
-  {
-    id: uuidv4(),
-    title: "Pay bills",
-    details: "test test test",
-    isCompleted: false,
-  },
-];
+
+// const initialtodos = [
+//   {
+//     id: uuidv4(),
+//     title: "Buy groceries",
+//     details: "test test test",
+//     isCompleted: false,
+//   },
+//   {
+//     id: uuidv4(),
+//     title: "Go to centrum",
+//     details: "test test test",
+//     isCompleted: false,
+//   },
+//   {
+//     id: uuidv4(),
+//     title: "Read a book",
+//     details: "test test test",
+//     isCompleted: false,
+//   },
+//   {
+//     id: uuidv4(),
+//     title: "Pay bills",
+//     details: "test test test",
+//     isCompleted: false,
+//   },
+// ];
 
 function App() {
-  const [todos, setTodos] = useState(initialtodos);
+  const [todos, setTodos] = useState([]);
 
   return (
     <ThemeProvider theme={theme}>

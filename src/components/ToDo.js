@@ -42,6 +42,8 @@ export default function ToDo({todo, handleCheck}) {
         });
         // const updatedTodos = todos.filter((t) => t.id !== todo.id);
         setTodos(updatedTodos);
+        localStorage.setItem("todos", JSON.stringify(updatedTodos));
+
     }
         // === handle Delete Dialog ===
 
@@ -63,6 +65,8 @@ export default function ToDo({todo, handleCheck}) {
         })
         setTodos(updatedTodos)
         setShowUpdateModal(false);
+        localStorage.setItem("todos", JSON.stringify(updatedTodos));
+
     }
     // === Handle Update Dialog ===
 
@@ -83,7 +87,9 @@ export default function ToDo({todo, handleCheck}) {
       }
       return t;
     });
-    setTodos(updatedTodos);       
+    setTodos(updatedTodos); 
+    localStorage.setItem("todos", JSON.stringify(updatedTodos));
+      
     }
     // === Event handlers ==
 
@@ -182,7 +188,8 @@ export default function ToDo({todo, handleCheck}) {
                 <CardContent>
                     <Grid container spacing={2}>
                         <Grid size={8}>
-                            <Typography variant="h5" sx={{ textAlign: "left" }}>
+                            <Typography variant="h5" sx={{ textAlign: "left", 
+                                textDecoration: todo.isCompleted ? "line-through" : "none" }}>
                                 {todo.title}
                             </Typography>
                             <Typography variant="h6" sx={{ textAlign: "left" }}>

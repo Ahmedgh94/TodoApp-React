@@ -22,8 +22,7 @@ import ToDo from "./ToDo";
 import { TodosContext } from "../Contexts/todosContext";
 
 // Others
-import { useState } from "react";
-import { useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 export default function TodoList() {
@@ -32,7 +31,9 @@ export default function TodoList() {
   const { todos, setTodos } = useContext(TodosContext);
   const [titleInput, setTitleinput] = useState("");
 
-  function handleCheckClick(todoId) {
+  const [displayedTodosType, setDisplayedTodosType] = useState("all");
+
+  // function handleCheckClick(todoId) {
     // de handle functie omzetten naar context dus hier de context gebruiken en dit logic wordt in ToDo.js teoegepast
     // const updatedTodos = todos.map((t) => {
     //   if (t.id === todoId) {
@@ -47,7 +48,53 @@ export default function TodoList() {
     //   return t;
     // });
     // setTodos(updatedTodos);
+  // }
+
+ // filteration arrays
+  const completedTodos = todos.filter((t) => {
+   return t.isCompleted 
+  });
+
+  const notCompleted = todos.filter((t) => {
+   return !t.isCompleted 
+  });
+  
+  let todosToBeRendered = todos
+
+  if (displayedTodosType === "completed") {
+    todosToBeRendered = completedTodos
+  } else if (displayedTodosType === "noneCompleted") {
+    todosToBeRendered = notCompleted;
   }
+  else{
+    todosToBeRendered = todos
+  }
+
+  // Map through ToDo items
+  const todoJsx = todosToBeRendered.map((t) => {
+    return <ToDo key={t.id} todo={t}  />;
+  })
+
+
+
+ 
+
+  function changeDiplayedType(e){
+    setDisplayedTodosType(e.target.value);
+  } 
+
+
+
+  // useEffect is being called with every render and that linked with compenent and state changes, 
+  // and we can define when to call useEffect by adding dependency array as second parameter
+  useEffect(() => {
+    console.log("Call use effect to get todos from local storage");
+    const storedTodos = JSON.parse(localStorage.getItem("todos"));
+    setTodos(storedTodos);
+  }, []);
+  // لا يتم استدعاءها الا حين يكتمل تحميل الكومبوننت بشكل كامل وعرضه للمستخدم
+
+  
 
   // Add task function
   function handleAddClick() {
@@ -57,17 +104,19 @@ export default function TodoList() {
       details: "",
       isCompleted: false,
     };
-    setTodos([...todos, newTodo]);
+    const updateTodos = ([...todos, newTodo]);
+    setTodos(updateTodos);
+    localStorage.setItem("todos", JSON.stringify(updateTodos));
     setTitleinput("");
   }
 
-  // Map through ToDo items
-  const todoJsx = todos.map((t) => {
-    return <ToDo key={t.id} todo={t}  />;
-  });
+
   return (
     <Container maxWidth="sm">
-      <Card sx={{ minWidth: 275 }}>
+      <Card sx={{ minWidth: 275 }} style={{
+        maxHeight: "80vh",
+        overflowY: "scroll"
+      }}>
         <CardContent>
           <Typography gutterBottom variant="h2">
             Tasks
@@ -76,23 +125,24 @@ export default function TodoList() {
 
           {/* Toggle Buttons  */}
           <ToggleButtonGroup
-            // value={alignment}
+            value={displayedTodosType}
             exclusive
-            // onChange={handleAlignment}
+            onChange={changeDiplayedType}
             aria-label="text alignment"
             style={{ marginTop: "30px" }}
           >
-            <ToggleButton value="left" aria-label="left aligned">
+            <ToggleButton value="all" aria-label="left aligned">
               All
             </ToggleButton>
-            <ToggleButton value="center" aria-label="centered">
+            <ToggleButton value="completed" aria-label="centered">
               Done
             </ToggleButton>
-            <ToggleButton value="right" aria-label="right aligned">
+            <ToggleButton value="noneCompleted" aria-label="right aligned">
               In progess
             </ToggleButton>
           </ToggleButtonGroup>
           {/* <FIlter buttons /> */}
+
 
           {/* ToDo Items */}
           {todoJsx}
@@ -134,6 +184,7 @@ export default function TodoList() {
                 onClick={() => {
                   handleAddClick();
                 }}
+                disabled={titleInput.length == 0}
               >
                 Add Task
               </Button>
