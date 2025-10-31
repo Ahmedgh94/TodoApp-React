@@ -19,11 +19,11 @@ import { Button } from "@mui/material";
 
 // to test the push 
 
-export default function ToDo({todo, handleCheck}) {
+export default function ToDo({ todo }) {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
-    const[updatedTodo, setUpdatedTodo] = useState({title: todo.title, details: todo.details});
-    const { todos, setTodos } = useContext(TodosContext);
+    const [updatedTodo, setUpdatedTodo] = useState({ title: todo.title || "" , details: todo.details || "" });
+    const { todos, setTodos, updateTodo, deleteTodo,handleCheckClick } = useContext(TodosContext);
 
 
 
@@ -32,20 +32,18 @@ export default function ToDo({todo, handleCheck}) {
     // Handle delete Dialog
     function handleDeleteClick() {
         setShowDeleteModal(true);
-    }   
+    }
     function handleDeleteDialogClose() {
         setShowDeleteModal(false);
-    }   
-    function handleDeleteConfirm() {
-        const updatedTodos = todos.filter((t) => {
-            return t.id !== todo.id;
-        });
-        // const updatedTodos = todos.filter((t) => t.id !== todo.id);
-        setTodos(updatedTodos);
-        localStorage.setItem("todos", JSON.stringify(updatedTodos));
-
     }
-        // === handle Delete Dialog ===
+
+    const handleDeleteConfirm = () => {
+        deleteTodo(todo.id); // Delete the Task using the Context
+        setShowDeleteModal(false);
+    };
+    // === handle Delete Dialog ===
+
+
 
 
     // Handle Update Dialog
@@ -55,129 +53,111 @@ export default function ToDo({todo, handleCheck}) {
     function handleUpdateClose() {
         setShowUpdateModal(false);
     }
-    function handleEditeConfirm() {
-        const updatedTodos = todos.map((t) => {
-            if (t.id == todo.id) {
-                return { ...t, title: updatedTodo.title, details: updatedTodo.details };
-            }else{
-                return t;
-            }
-        })
-        setTodos(updatedTodos)
+   
+    
+    const handleEditeConfirm = () => {
+        updateTodo(todo.id, updatedTodo); // Update the Task using the Context
         setShowUpdateModal(false);
-        localStorage.setItem("todos", JSON.stringify(updatedTodos));
-
     }
     // === Handle Update Dialog ===
 
 
 
     // Handle check click
-    function handleCheckClick() {
-        // handleCheck(todo.id);
-         const updatedTodos = todos.map((t) => {
-      if (t.id === todo.id) {
-        // if (t.isCompleted == true) {
-        //   t.isCompleted = false;
-        // } else {
-        //   t.isCompleted = true;
-        // }
-
-        t.isCompleted = !t.isCompleted;
-      }
-      return t;
-    });
-    setTodos(updatedTodos); 
-    localStorage.setItem("todos", JSON.stringify(updatedTodos));
-      
-    }
+    // function handleCheckClick() {
+    //     const updatedTodos = todos.map((t) => {
+    //         if (t.id === todo.id) {
+    //             t.isCompleted = !t.isCompleted;  // تغيير حالة isCompleted
+    //         }
+    //         return t;
+    //     });
+    //     setTodos(updatedTodos);  // تحديث الـ todos باستخدام setTodos
+    // }
     // === Event handlers ==
 
 
     return (
         <>
-        {/* Delete Modal */}
+            {/* Delete Modal */}
             <Dialog
-            onClose={handleDeleteDialogClose}
-        open={showDeleteModal}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"Ben je zeker dat je deze Taak wilt verwideren?"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-           Let op als je deze taak verwijderd hebt kan je dit niet meer terug halen!.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDeleteDialogClose}>Annuleren</Button>
-          <Button onClick={handleDeleteConfirm} autoFocus>
-            Akkord
-          </Button>
-        </DialogActions>
-      </Dialog>
-        {/* == Delete Modal ==  */}
+                onClose={handleDeleteDialogClose}
+                open={showDeleteModal}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    {"Ben je zeker dat je deze Taak wilt verwideren?"}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Let op als je deze taak verwijderd hebt kan je dit niet meer terug halen!.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleDeleteDialogClose}>Annuleren</Button>
+                    <Button onClick={handleDeleteConfirm} autoFocus>
+                        Akkord
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            {/* == Delete Modal ==  */}
 
 
-        {/* Update Modal */}
+            {/* Update Modal */}
             <Dialog
-        onClose={handleUpdateClose}
-        open={showUpdateModal}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"Ben je zeker dat je deze Taak wilt verwideren?"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-           Let op als je deze taak verwijderd hebt kan je dit niet meer terug halen!.
-          </DialogContentText>
-             <TextField
-              autoFocus
-              required
-              margin="dense"
-              id="title"
-              name="title field"
-              label="Title of the task"
-              fullWidth
-              variant="standard"
-              value={updatedTodo.title}
-              onChange={(e) =>
-              {
-                setUpdatedTodo ({...updatedTodo, title: e.target.value })
-              }
-              }
-            />
-             <TextField
-              autoFocus
-              required
-              margin="dense"
-              id="Details"
-              name="Details field"
-              label="Add details"
-              fullWidth
-              variant="standard"
-               value={updatedTodo.details}
-              onChange={(e) =>
-              {
-                setUpdatedTodo ({...updatedTodo, details: e.target.value })
-              }
-              }
-            />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleUpdateClose}>Annuleren</Button>
-          <Button onClick={handleEditeConfirm} autoFocus>
-            Akkord
-          </Button>
-        </DialogActions>
-      </Dialog>
-        {/* == Update Modal ==  */}
+                onClose={handleUpdateClose}
+                open={showUpdateModal}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    {"Ben je zeker dat je deze Taak wilt verwideren?"}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Let op als je deze taak verwijderd hebt kan je dit niet meer terug halen!.
+                    </DialogContentText>
+                    <TextField
+                        autoFocus
+                        required
+                        margin="dense"
+                        id="title"
+                        name="title field"
+                        label="Title of the task"
+                        fullWidth
+                        variant="standard"
+                        value={updatedTodo.title}
+                        onChange={(e) => {
+                            setUpdatedTodo({ ...updatedTodo, title: e.target.value })
+                        }
+                        }
+                    />
+                    <TextField
+                        autoFocus
+                        required
+                        margin="dense"
+                        id="Details"
+                        name="Details field"
+                        label="Add details"
+                        fullWidth
+                        variant="standard"
+                        value={updatedTodo.details}
+                        onChange={(e) => {
+                            setUpdatedTodo({ ...updatedTodo, details: e.target.value })
+                        }
+                        }
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleUpdateClose}>Annuleren</Button>
+                    <Button onClick={handleEditeConfirm} autoFocus>
+                        Akkord
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            {/* == Update Modal ==  */}
             <Card
-            className="todoCard"
+                className="todoCard"
                 sx={{
                     minWidth: 275,
                     background: "#283593",
@@ -188,12 +168,14 @@ export default function ToDo({todo, handleCheck}) {
                 <CardContent>
                     <Grid container spacing={2}>
                         <Grid size={8}>
-                            <Typography variant="h5" sx={{ textAlign: "left", 
-                                textDecoration: todo.isCompleted ? "line-through" : "none" }}>
+                            <Typography variant="h5" sx={{
+                                textAlign: "left",
+                                textDecoration: todo.isCompleted ? "line-through" : "none"
+                            }}>
                                 {todo.title}
                             </Typography>
                             <Typography variant="h6" sx={{ textAlign: "left" }}>
-                                {todo.details}
+                                {todo.body}
                             </Typography>
                         </Grid>
 
@@ -201,11 +183,9 @@ export default function ToDo({todo, handleCheck}) {
                             display="flex" justifyContent="space-around" alignItems="center">
 
 
-                                {/* Check Icon Button */}
+                            {/* Check Icon Button */}
                             <IconButton
-                            onClick={() => {
-                                handleCheckClick();
-                            }}
+                                onClick={() => handleCheckClick(todo.id)}
                                 className="iconButton"
                                 aria-label="delete"
                                 style={{
@@ -216,10 +196,10 @@ export default function ToDo({todo, handleCheck}) {
                             >
                                 <CheckIcon />
                             </IconButton>
-                             {/* == Check Icon Button == */}
+                            {/* == Check Icon Button == */}
 
 
-                                {/* Edit Icon Button */}
+                            {/* Edit Icon Button */}
                             <IconButton
                                 className="iconButton"
                                 aria-label="delete"
@@ -232,10 +212,10 @@ export default function ToDo({todo, handleCheck}) {
                             >
                                 <EditIcon />
                             </IconButton>
-                                {/* == Edit Icon Button == */}
+                            {/* == Edit Icon Button == */}
 
 
-                                {/* Delete Icon Button */}
+                            {/* Delete Icon Button */}
                             <IconButton
                                 className="iconButton"
                                 aria-label="delete"
@@ -248,7 +228,7 @@ export default function ToDo({todo, handleCheck}) {
                             >
                                 <DeleteOutlineIcon />
                             </IconButton>
-                                {/* == Delete Icon Button == */}
+                            {/* == Delete Icon Button == */}
                         </Grid>
                     </Grid>
                 </CardContent>

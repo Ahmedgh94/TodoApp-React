@@ -23,93 +23,28 @@ import { TodosContext } from "../Contexts/todosContext";
 
 // Others
 import { useState, useContext, useEffect } from "react";
-import { v4 as uuidv4 } from "uuid";
 
 export default function TodoList() {
-  // useState definition
-  // Use context to get todos and setTodos
-  const { todos, setTodos } = useContext(TodosContext);
-  const [titleInput, setTitleinput] = useState("");
-
+  const { todos, addTodo, loading, error } = useContext(TodosContext); // استخدام الـ Context
+  const [titleInput, setTitleInput] = useState("");
   const [displayedTodosType, setDisplayedTodosType] = useState("all");
-
-  // function handleCheckClick(todoId) {
-    // de handle functie omzetten naar context dus hier de context gebruiken en dit logic wordt in ToDo.js teoegepast
-    // const updatedTodos = todos.map((t) => {
-    //   if (t.id === todoId) {
-    //     // if (t.isCompleted == true) {
-    //     //   t.isCompleted = false;
-    //     // } else {
-    //     //   t.isCompleted = true;
-    //     // }
-
-    //     t.isCompleted = !t.isCompleted;
-    //   }
-    //   return t;
-    // });
-    // setTodos(updatedTodos);
-  // }
-
- // filteration arrays
-  const completedTodos = todos.filter((t) => {
-   return t.isCompleted 
-  });
-
-  const notCompleted = todos.filter((t) => {
-   return !t.isCompleted 
-  });
-  
-  let todosToBeRendered = todos
-
-  if (displayedTodosType === "completed") {
-    todosToBeRendered = completedTodos
-  } else if (displayedTodosType === "noneCompleted") {
-    todosToBeRendered = notCompleted;
-  }
-  else{
-    todosToBeRendered = todos
-  }
-
-  // Map through ToDo items
-  const todoJsx = todosToBeRendered.map((t) => {
-    return <ToDo key={t.id} todo={t}  />;
-  })
-
-
-
- 
-
-  function changeDiplayedType(e){
-    setDisplayedTodosType(e.target.value);
-  } 
-
-
-
-  // useEffect is being called with every render and that linked with compenent and state changes, 
-  // and we can define when to call useEffect by adding dependency array as second parameter
-  useEffect(() => {
-    console.log("Call use effect to get todos from local storage");
-    const storedTodos = JSON.parse(localStorage.getItem("todos"));
-    setTodos(storedTodos);
-  }, []);
-  // لا يتم استدعاءها الا حين يكتمل تحميل الكومبوننت بشكل كامل وعرضه للمستخدم
-
-  
 
   // Add task function
   function handleAddClick() {
-    const newTodo = {
-      id: uuidv4(),
-      title: titleInput,
-      details: "",
-      isCompleted: false,
-    };
-    const updateTodos = ([...todos, newTodo]);
-    setTodos(updateTodos);
-    localStorage.setItem("todos", JSON.stringify(updateTodos));
-    setTitleinput("");
+    const newTodo = { title: titleInput, body: "" };
+    addTodo(newTodo);  // add the new task using the Context
+    setTitleInput("");  
   }
 
+  // filter basid on the status
+    const completedTodos = todos.filter((t) => t.isCompleted);
+    const notCompleted = todos.filter((t) => !t.isCompleted);
+     let todosToBeRendered = todos;
+  if (displayedTodosType === "completed") {
+    todosToBeRendered = completedTodos;
+  } else if (displayedTodosType === "noneCompleted") {
+    todosToBeRendered = notCompleted;
+  }
 
   return (
     <Container maxWidth="sm">
@@ -127,7 +62,7 @@ export default function TodoList() {
           <ToggleButtonGroup
             value={displayedTodosType}
             exclusive
-            onChange={changeDiplayedType}
+            onChange={(e) => setDisplayedTodosType(e.target.value)}
             aria-label="text alignment"
             style={{ marginTop: "30px" }}
           >
@@ -145,7 +80,9 @@ export default function TodoList() {
 
 
           {/* ToDo Items */}
-          {todoJsx}
+            {todosToBeRendered.map((todo) => (
+            <ToDo key={todo.id} todo={todo} />
+          ))}
           {/* ==ToDo ==  */}
 
           {/* Add task field */}
@@ -166,12 +103,11 @@ export default function TodoList() {
                 label="Add task"
                 variant="outlined"
                 value={titleInput}
-                onChange={(e) => {
-                  setTitleinput(e.target.value);
-                }}
+                 onChange={(e) => setTitleInput(e.target.value)}
               />
             </Grid>
             <Grid
+              
               size={4}
               display="flex"
               justifyContent="center"
@@ -181,9 +117,7 @@ export default function TodoList() {
                 style={{ width: "100", height: "100%" }}
                 variant="contained"
                 endIcon={<AddIcon />}
-                onClick={() => {
-                  handleAddClick();
-                }}
+                onClick={handleAddClick}
                 disabled={titleInput.length == 0}
               >
                 Add Task
